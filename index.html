@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Content Loading</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-container, .offline-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .offline-container {
+            display: none;
+            background: #fff;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #2b6cb0;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+        
+        .loading-subtext {
+            font-size: 0.9rem;
+            color: #718096;
+            max-width: 300px;
+        }
+        
+        .offline-icon {
+            font-size: 2.5rem;
+            color: #718096;
+            margin-bottom: 15px;
+        }
+        
+        .offline-title {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .offline-message {
+            font-size: 0.95rem;
+            color: #718096;
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .retry-button {
+            padding: 8px 20px;
+            background: #2b6cb0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+        
+        .retry-button:hover {
+            background: #2c5282;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #fff;
+            display: flex;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #718096;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item.active {
+            color: #2b6cb0;
+        }
+        
+        .nav-item:hover {
+            background: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="https://commercekaladka.blogspot.com" allowfullscreen></iframe>
+    
+    <div class="loading-container">
+        <div class="loader"></div>
+        <div class="loading-text">Loading</div>
+        <div class="loading-subtext">Please wait while we prepare your reading experience</div>
+    </div>
+    
+    <div class="offline-container">
+        <div class="offline-icon">
+            <i class="fas fa-wifi-slash"></i>
+        </div>
+        <h2 class="offline-title">Connection Interrupted</h2>
+        <p class="offline-message">We can't load the content right now. Please check your internet connection.</p>
+        <button class="retry-button" onclick="checkConnection()">
+            <i class="fas fa-sync-alt"></i> Retry
+        </button>
+    </div>
+    
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-book"></i>
+            <span>Notes</span>
+        </a>
+        <a href="/pyq.html" class="nav-item">
+            <i class="fas fa-question-circle"></i>
+            <span>PYQ</span>
+        </a>
+    </div>
+    
+    <script>
+        const iframe = document.querySelector('iframe');
+        const loadingContainer = document.querySelector('.loading-container');
+        const offlineContainer = document.querySelector('.offline-container');
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        // Show loading by default
+        loadingContainer.style.display = 'flex';
+        iframe.style.opacity = '0';
+        
+        // When iframe loads, hide loading
+        iframe.addEventListener('load', function() {
+            loadingContainer.style.display = 'none';
+            iframe.style.opacity = '1';
+        });
+        
+        // Error handling
+        iframe.addEventListener('error', function() {
+            showOffline();
+        });
+        
+        // Check connection status
+        function checkConnection() {
+            if (navigator.onLine) {
+                offlineContainer.style.display = 'none';
+                loadingContainer.style.display = 'flex';
+                iframe.style.opacity = '0';
+                iframe.src = iframe.src; // Reload
+            } else {
+                showOffline();
+            }
+        }
+        
+        function showOffline() {
+            loadingContainer.style.display = 'none';
+            offlineContainer.style.display = 'flex';
+            iframe.style.opacity = '0';
+        }
+        
+        // Initial check
+        window.addEventListener('load', checkConnection);
+        window.addEventListener('online', checkConnection);
+        window.addEventListener('offline', checkConnection);
+        
+        // Navigation item click handler
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // You can add functionality here for each nav item
+                const text = this.querySelector('span').textContent;
+                if (text === 'Home') {
+                    iframe.src = 'https://commercekaladka.blogspot.com';
+                } else if (text === 'Notes') {
+                    // Add your Notes URL here
+                    iframe.src = '#';
+                } else if (text === 'PYQ') {
+                    // Add your PYQ URL here
+                    iframe.src = '#';
+                }
+                
+                // Show loading when switching pages
+                loadingContainer.style.display = 'flex';
+                iframe.style.opacity = '0';
+            });
+        });
+    </script>
+</body>
+</html>
